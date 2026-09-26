@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { AcademicService } from "../services/academic.service.js";
+import { execSync } from "child_process";
 
 const academicService = new AcademicService();
 
@@ -69,6 +70,26 @@ export function registerAcademicTools(server: McpServer) {
       return {
         content: [{ type: "text", text: JSON.stringify(menu, null, 2) }]
       };
+    }
+  );
+
+  server.tool(
+    "sync_timetable_to_calendar",
+    "Pushes the current semester's timetable to the user's Google Calendar using OAuth",
+    {},
+    async () => {
+      try {
+        // We call the standalone script we just built which handles everything nicely.
+        const output = execSync("npx tsx sync-calendar.ts").toString();
+        return {
+          content: [{ type: "text", text: `Successfully synced timetable to Google Calendar!\n\n${output}` }]
+        };
+      } catch (e: any) {
+        return {
+          content: [{ type: "text", text: `Failed to sync to Google Calendar. Make sure token.json exists. Error: ${e.message}` }],
+          isError: true
+        };
+      }
     }
   );
 
