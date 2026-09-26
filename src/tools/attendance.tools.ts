@@ -12,22 +12,29 @@ export function registerAttendanceTools(server: McpServer) {
       courseCode: z.string().optional().describe("The course code (e.g., CS301). If omitted, returns all courses.")
     },
     async ({ courseCode }) => {
-      if (courseCode) {
-        const result = attendanceService.getCourseAttendance(courseCode);
-        if (!result) {
+      try {
+        if (courseCode) {
+          const result = await attendanceService.getCourseAttendance(courseCode);
+          if (!result) {
+            return {
+              content: [{ type: "text", text: `Error: Course ${courseCode} not found in attendance records.` }],
+              isError: true
+            };
+          }
           return {
-            content: [{ type: "text", text: `Error: Course ${courseCode} not found in attendance records.` }],
-            isError: true
+            content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
+          };
+        } else {
+          const results = await attendanceService.getAllAttendance();
+          return {
+            content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
           };
         }
+      } catch (error: any) {
         return {
-          content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
-        };
-      } else {
-        const results = attendanceService.getAllAttendance();
-        return {
-          content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
-        };
+          content: [{ type: "text", text: `Failed to fetch attendance: ${error.message}` }],
+          isError: true
+        }
       }
     }
   );
