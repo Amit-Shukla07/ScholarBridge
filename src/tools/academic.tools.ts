@@ -21,7 +21,14 @@ export function registerAcademicTools(server: McpServer) {
     "lookup_course",
     "Looks up a specific course by its code and returns schedule, faculty, and room allocation",
     {
-      code: z.string().describe("The course code to look up (e.g., CS301)")
+      code: z.enum([
+        "CSE 302", 
+        "CSE 303", 
+        "CSE 305", 
+        "CSE 309", 
+        "HIS 251", 
+        "SEC 302"
+      ]).describe("The course code to look up. Select from the dropdown.")
     },
     async ({ code }) => {
       const course = academicService.getCourseByCode(code);
@@ -41,7 +48,15 @@ export function registerAcademicTools(server: McpServer) {
     "get_dining_menu",
     "Returns the complete dining menu (breakfast, lunch, snacks, dinner) for a given day",
     {
-      day: z.string().describe("The day of the week (e.g., Monday, Tuesday)")
+      day: z.enum([
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]).describe("The day of the week. Select from the dropdown.")
     },
     async ({ day }) => {
       const menu = academicService.getMenuByDay(day);

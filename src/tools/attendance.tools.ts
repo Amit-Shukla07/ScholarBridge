@@ -9,7 +9,14 @@ export function registerAttendanceTools(server: McpServer) {
     "check_attendance_status",
     "Check attendance status for a specific course or all courses, returning metrics for safe bunks or recovery classes",
     {
-      courseCode: z.string().optional().describe("The course code (e.g., CS301). If omitted, returns all courses.")
+      courseCode: z.enum([
+        "CSE 302", 
+        "CSE 303", 
+        "CSE 305", 
+        "CSE 309", 
+        "HIS 251", 
+        "SEC 302"
+      ]).optional().describe("The course code. Select from the dropdown. If omitted, returns all courses.")
     },
     async ({ courseCode }) => {
       try {

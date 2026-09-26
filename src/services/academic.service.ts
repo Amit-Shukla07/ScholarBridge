@@ -1,10 +1,12 @@
 import { Course, DiningMenu, AcademicDeadline } from "../types/academic.js";
 
 const COURSE_CATALOG: Course[] = [
-  { code: "CS301", title: "Operating Systems", instructor: "Dr. A. Sharma", credits: 4, room: "Hall 302, Academic Block 2", slot: "Mon 10:00, Wed 10:00" },
-  { code: "CS304", title: "DBMS", instructor: "Prof. S. Gupta", credits: 4, room: "Hall 305, Academic Block 2", slot: "Tue 11:00, Thu 11:00" },
-  { code: "CS308", title: "Computer Networks", instructor: "Dr. R. Singh", credits: 3, room: "Lab 4, Computing Center", slot: "Fri 14:00" },
-  { code: "CS312", title: "Theory of Computation", instructor: "Dr. K. Patel", credits: 3, room: "Hall 201, Academic Block 1", slot: "Mon 14:00, Wed 14:00" }
+  { code: "CSE 302", title: "OPERATING SYSTEMS", instructor: "Dr. Nelatoori Kiran Babu, Dr. Syed Sameen Ahmad Rizvi", credits: 4, room: "(C 903), (V 604)", slot: "Tue 15:00, Thu 13:00, Thu 14:00, Fri 09:00, Fri 10:00" },
+  { code: "CSE 303", title: "MACHINE LEARNING", instructor: "Dr. Ch. Anil Carie, Mr. Ajay Dilip Kumar Marapatla", credits: 4, room: "(C 903), (V 604)", slot: "Tue 09:00, Tue 10:00, Thu 11:00, Fri 15:00, Fri 16:00" },
+  { code: "CSE 305", title: "COMPUTER ORGANIZATION AND ARCHITECTURE", instructor: "Dr. Anirban Bhar, Dr. Firoj Gazi", credits: 4, room: "(C 903), (V 604)", slot: "Tue 13:00, Tue 14:00, Thu 15:00, Thu 16:00, Fri 14:00" },
+  { code: "CSE 309", title: "ADVANCED JAVA PROGRAMMING", instructor: "Dr. Gone Neelakantam, Dr. Paramita Das", credits: 4, room: "(C 903), (S 412)", slot: "Mon 14:00, Mon 15:00, Wed 10:00, Fri 11:00, Fri 12:00" },
+  { code: "HIS 251", title: "INTRODUCTION TO GENDER", instructor: "Dr. Lekshmi Chandran CP", credits: 3, room: "(C 404)", slot: "Mon 16:00, Tue 16:00" },
+  { code: "SEC 302", title: "GENERATIVE AI WITH AGENTIC AI - I", instructor: "Mr. Careerskill", credits: 2, room: "(C 903)", slot: "Mon 11:00, Mon 12:00, Wed 13:00, Wed 14:00" }
 ];
 
 const DINING_MENUS: Record<string, DiningMenu> = {
@@ -29,7 +31,8 @@ export class AcademicService {
   }
 
   public getCourseByCode(code: string): Course | null {
-    return COURSE_CATALOG.find(c => c.code === code) || null;
+    const normalizedQuery = code.replace(/\s+/g, '').toUpperCase();
+    return COURSE_CATALOG.find(c => c.code.replace(/\s+/g, '').toUpperCase() === normalizedQuery) || null;
   }
 
   public getMenuByDay(day: string): DiningMenu | null {

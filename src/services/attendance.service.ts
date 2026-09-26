@@ -2,10 +2,12 @@ import { AttendanceRecord, AttendanceEvaluation } from "../types/academic.js";
 import { ErpScraper } from "./erp.scraper.js";
 
 const DEFAULT_ATTENDANCE: Record<string, AttendanceRecord> = {
-  "CS301": { courseCode: "CS301", courseTitle: "Operating Systems", totalConducted: 40, attended: 32, minPercentageRequired: 75 },
-  "CS304": { courseCode: "CS304", courseTitle: "DBMS", totalConducted: 35, attended: 25, minPercentageRequired: 75 },
-  "CS308": { courseCode: "CS308", courseTitle: "Computer Networks", totalConducted: 42, attended: 35, minPercentageRequired: 75 },
-  "CS312": { courseCode: "CS312", courseTitle: "Theory of Computation", totalConducted: 38, attended: 26, minPercentageRequired: 75 }
+  "CSE 302": { courseCode: "CSE 302", courseTitle: "OPERATING SYSTEMS", totalConducted: 40, attended: 32, minPercentageRequired: 75 },
+  "CSE 303": { courseCode: "CSE 303", courseTitle: "MACHINE LEARNING", totalConducted: 35, attended: 25, minPercentageRequired: 75 },
+  "CSE 305": { courseCode: "CSE 305", courseTitle: "COMPUTER ORGANIZATION AND ARCHITECTURE", totalConducted: 42, attended: 35, minPercentageRequired: 75 },
+  "CSE 309": { courseCode: "CSE 309", courseTitle: "ADVANCED JAVA PROGRAMMING", totalConducted: 38, attended: 26, minPercentageRequired: 75 },
+  "HIS 251": { courseCode: "HIS 251", courseTitle: "INTRODUCTION TO GENDER", totalConducted: 15, attended: 12, minPercentageRequired: 75 },
+  "SEC 302": { courseCode: "SEC 302", courseTitle: "GENERATIVE AI WITH AGENTIC AI - I", totalConducted: 20, attended: 18, minPercentageRequired: 75 }
 };
 
 export class AttendanceService {
@@ -42,7 +44,13 @@ export class AttendanceService {
     try {
       if (process.env.ERP_USERNAME) {
         console.error("ERP credentials found in .env. Attempting live web scrape...");
-        const liveData = await this.scraper.scrapeAttendance();
+        let liveData;
+        try {
+          liveData = await this.scraper.scrapeAttendance();
+        } catch (err: any) {
+          console.error("Scrape failed. Retrying one more time in case of Captcha error...");
+          liveData = await this.scraper.scrapeAttendance();
+        }
         
         const liveRecordMap: Record<string, AttendanceRecord> = {};
         for (const record of liveData) {
@@ -59,7 +67,10 @@ export class AttendanceService {
 
   public async getCourseAttendance(courseCode: string): Promise<AttendanceEvaluation | null> {
     const records = await this.fetchRecords();
-    const record = records[courseCode];
+    const normalizedQuery = courseCode.replace(/\s+/g, '').toUpperCase();
+    const record = Object.values(records).find(r => 
+      r.courseCode.replace(/\s+/g, '').toUpperCase() === normalizedQuery
+    );
     if (!record) return null;
     return this.evaluateAttendance(record);
   }
