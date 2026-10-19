@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerAttendanceTools } from "./tools/attendance.tools.js";
 import { registerAcademicTools } from "./tools/academic.tools.js";
+import { registerPlannerTools } from "./tools/planner.tools.js";
+import { registerFacultyTools } from "./tools/faculty.tools.js";
 
 async function main() {
   const server = new McpServer({
@@ -13,6 +15,8 @@ async function main() {
   
   registerAttendanceTools(server);
   registerAcademicTools(server);
+  registerPlannerTools(server);
+  registerFacultyTools(server);
 
   console.error("Connecting to standard transport...");
   const transport = new StdioServerTransport();

@@ -20,7 +20,9 @@ The architecture is layered:
 - `check_attendance_status`: Evaluates attendance for a course (or all courses), returning your current percentage, safe bunks allowed, or consecutive classes needed to avoid debarment.
 - `get_enrolled_courses`: Retrieves a list of all your enrolled courses along with instructor and venue details.
 - `lookup_course`: Looks up detailed schedule and room allocation for a specific course code.
-- `get_dining_menu`: Fetches the hostel mess menu for a given day.
+- `get_dining_menu`: Fetches the hostel mess menu for a given day and mess type ('north' or 'south'), with optional meal slot filtering (breakfast, lunch, snacks, dinner).
+- `show_todays_menu`: Automatically detects today's day of the week and returns the complete breakfast, lunch, snacks, and dinner schedule for North or South mess with service timings.
+- `get_mess_timings`: Returns the full reference table for operational mess timings across weekdays and weekends.
 - `get_pending_deadlines`: Returns all upcoming assignments, dates, and the required submission portals.
 
 ## 4. Setup Guide
