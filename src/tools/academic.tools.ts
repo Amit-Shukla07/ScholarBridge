@@ -67,12 +67,62 @@ export function registerAcademicTools(server: McpServer) {
         };
       }
 
-      const formattedMarkdown = academicService.formatMenuAsMarkdown(todayData.menu, mess, true);
+      const dayMenu = todayData.menu;
+
+      // Calculate real-time active or upcoming meal window
+      const now = new Date();
+      const totalMins = now.getHours() * 60 + now.getMinutes();
+      let activeMealSlot = { name: "DINNER", timing: "7:00 PM – 9:45 PM" };
+      if (totalMins >= 420 && totalMins < 570) {
+        activeMealSlot = { name: "BREAKFAST", timing: "7:00 AM – 9:00 AM" };
+      } else if (totalMins >= 720 && totalMins < 870) {
+        activeMealSlot = { name: "LUNCH", timing: "12:00 PM – 2:30 PM" };
+      } else if (totalMins >= 990 && totalMins < 1065) {
+        activeMealSlot = { name: "SNACKS", timing: "4:30 PM – 5:45 PM" };
+      } else if (totalMins >= 1140 && totalMins < 1305) {
+        activeMealSlot = { name: "DINNER", timing: "7:00 PM – 9:45 PM" };
+      } else if (totalMins < 420) {
+        activeMealSlot = { name: "UPCOMING: BREAKFAST", timing: "7:00 AM – 9:00 AM" };
+      } else if (totalMins < 720) {
+        activeMealSlot = { name: "UPCOMING: LUNCH", timing: "12:00 PM – 2:30 PM" };
+      } else if (totalMins < 990) {
+        activeMealSlot = { name: "UPCOMING: SNACKS", timing: "4:30 PM – 5:45 PM" };
+      } else if (totalMins < 1140) {
+        activeMealSlot = { name: "UPCOMING: DINNER", timing: "7:00 PM – 9:45 PM" };
+      } else {
+        activeMealSlot = { name: "NEXT: BREAKFAST", timing: "Tomorrow 7:00 AM" };
+      }
+
+      const formatItems = (items: string[]) => {
+        return items.map(item => {
+          let text = item.trim();
+          if (/watermelon/i.test(text) && !text.startsWith("🍉")) text = `🍉 ${text}`;
+          else if (/papaya/i.test(text) && !text.startsWith("🍈")) text = `🍈 ${text}`;
+          else if (/ice cream/i.test(text) && !text.startsWith("🍨")) text = `🍨 ${text}`;
+          else if (/paneer/i.test(text) && !text.startsWith("🧀")) text = `🧀 ${text}`;
+          return text;
+        }).join(", ");
+      };
+
+      const markdownUI = `
+# 📅 **${dayMenu.day.toUpperCase()} (TODAY)** — *${mess.toUpperCase()} INDIAN MESS*
+> 🕒 **Active Window:** ${activeMealSlot.name} (${activeMealSlot.timing})
+
+| 🕒 MEAL | 🍴 MENU ITEMS | ⏰ SERVING TIMINGS |
+| :--- | :--- | :--- |
+| **BREAKFAST** | ${formatItems(dayMenu.breakfast.items)} | \`${dayMenu.breakfast.timing}\` |
+| **LUNCH** | ${formatItems(dayMenu.lunch.items)} | \`${dayMenu.lunch.timing}\` |
+| **SNACKS** | ${formatItems(dayMenu.snacks.items)} | \`${dayMenu.snacks.timing}\` |
+| **DINNER** | ${formatItems(dayMenu.dinner.items)} | \`${dayMenu.dinner.timing}\` |
+
+*Highlighted Specialties: 🍉 Cut Watermelon • 🍨 Ice Cream*
+`.trim();
+
       return {
         content: [
           {
             type: "text",
-            text: formattedMarkdown,
+            text: markdownUI,
           },
         ],
       };

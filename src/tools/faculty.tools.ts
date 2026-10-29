@@ -48,21 +48,30 @@ export function registerFacultyTools(server: McpServer) {
         | { type: "image"; data: string; mimeType: string }
       > = [];
 
-      // Short and crisp markdown text (no base64 strings in text!)
+      // Structured profile cards matching executive card layout (no base64 strings in text)
       const formattedMarkdown = results
         .map((f) => {
           const socialItems: string[] = [];
-          if (f.socialLinks?.linkedin) socialItems.push("LinkedIn");
-          if (f.socialLinks?.googleScholar) socialItems.push("Google Scholar");
-          if (f.socialLinks?.scopus) socialItems.push("Scopus");
-          if (f.socialLinks?.orcid) socialItems.push("ORCID");
+          if (f.socialLinks?.linkedin) socialItems.push("[LinkedIn ↗](https://linkedin.com)");
+          if (f.socialLinks?.googleScholar) socialItems.push("[Google Scholar ↗](https://scholar.google.com)");
+          if (f.socialLinks?.scopus) socialItems.push("[Scopus ↗](https://scopus.com)");
+          if (f.socialLinks?.orcid) socialItems.push("[ORCID ↗](https://orcid.org)");
 
-          return `### 👨‍🏫 ${f.name}
-**${f.designation}** | *${f.department}*
+          const deptShort = f.department.replace("Department of ", "");
 
-- **📧 Contact Details:** [${f.email}](mailto:${f.email})
-- **📍 Office Location:** ${f.officeLocation.rawLocation}
-${socialItems.length > 0 ? `- **🔗 Social Links:** ${socialItems.join(" • ")}` : ""}`;
+          return [
+            `### 👨‍🏫 ${f.name}`,
+            `**${f.designation}** • \`[${deptShort}]\``,
+            ``,
+            `- **📧 Email:** [${f.email}](mailto:${f.email})`,
+            `- **🏢 Office Cabin Location:**`,
+            `  - **Block:** ${f.officeLocation.block}`,
+            `  - **Floor Level:** ${f.officeLocation.level}`,
+            `  - **Cubicle / Cabin:** ${f.officeLocation.roomOrCubicle}`,
+            `  - **Full Address:** ${f.officeLocation.rawLocation}`,
+            `- **🖼️ Avatar Photo:** \`${f.avatarUrl}\``,
+            socialItems.length > 0 ? `- **🔗 Academic Links:** ${socialItems.join(" • ")}` : ""
+          ].filter(Boolean).join("\n");
         })
         .join("\n\n---\n\n");
 
